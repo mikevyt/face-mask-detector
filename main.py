@@ -1,8 +1,9 @@
 import cv2
 import sys
+from keras.models import load_model
 import numpy as np
 from keras.applications import resnet50
-from keras.models import load_model
+import face_detection
 
 # pip install -r requirements.txt
 # sudo python main.py haarcascade_frontalface_default.xml
@@ -13,36 +14,36 @@ def main():
     cascPath = sys.argv[1]
     modelPath = sys.argv[2]
     faceCascade = cv2.CascadeClassifier(cascPath)
+    modelPath = sys.argv[2]
     mask_classifier = load_model(modelPath)
+    detector = face_detection.build_detector("DSFDDetector", confidence_threshold=.5, nms_iou_threshold=.3)
 
     video_capture = cv2.VideoCapture(0)
+    FILE_PATH = "/Users/milly./Desktop/mask.jpg"
+
+    img = cv2.imread(FILE_PATH)
 
     while True:
         # Capture frame-by-frame
-        ret, frame = video_capture.read()
-
+        # ret, frame = video_capture.read()
+        frame = img
+    
         masked_faces = []
         unmasked_faces = []
 
-        # Detect Faces
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-        detections = faceCascade.detectMultiScale(
-            gray,
-            scaleFactor=1.1,
-            minNeighbors=5,
-            minSize=(30, 30),
-            flags=cv2.CASCADE_SCALE_IMAGE
-        )
-        print(detections.shape)
-
-        if detections.shape[0] > 0:
-            for i in range(detections.shape[0]):
+        
+        faces = detector.detect(img[:,:,::-1])
+        
+        print(faces)
+        
+        if len(faces) > 0 and faces.shape[0] > 0:
+            for i in range(faces.shape[0]):
                 # Get Co-ordinates
-                x, y, w, h = detections[i]
-                x1 = x
-                y1 = y
-                x2 = x + w
-                y2 = y + h
+                x1 = int(faces[i][0])
+                x2 = int(faces[i][2])
+                y1 = int(faces[i][1])
+                y2 = int(faces[i][3])
 
 
                 # Predict Output
