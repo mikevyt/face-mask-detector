@@ -12,6 +12,7 @@ import face_detection
 
 def main():
     cascPath = sys.argv[1]
+    modelPath = sys.argv[2]
     faceCascade = cv2.CascadeClassifier(cascPath)
     modelPath = sys.argv[2]
     mask_classifier = load_model(modelPath)
@@ -64,11 +65,6 @@ def main():
         for f in range(len(unmasked_faces)):
             a,b,c,d = unmasked_faces[f]
             cv2.rectangle(frame, (a,b), (c,d), (0,0,255), 2)
-
-
-        # # Draw a rectangle around the faces
-        # for (x, y, w, h, _) in faces:
-        #     cv2.rectangle(frame, (x, y), (x+w, y+h), (0, 255, 0), 2)
 
         # Display the resulting frame
         cv2.imshow('Video', frame)
