@@ -23,21 +23,25 @@ def main():
 
     img = cv2.imread(FILE_PATH)
 
+    i = 0
+    masked_faces = []
+    unmasked_faces = []
+
     while True:
         # Capture frame-by-frame
-        # ret, frame = video_capture.read()
-        frame = img
-    
-        masked_faces = []
-        unmasked_faces = []
+        ret, frame = video_capture.read()
+        # frame = img
 
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-        
-        faces = detector.detect(img[:,:,::-1])
+        faces = []
+        if i % 500 == 0:
+            faces = detector.detect(frame[:,:,::-1])
         
         print(faces)
         
         if len(faces) > 0 and faces.shape[0] > 0:
+            masked_faces = []
+            unmasked_faces = []
             for i in range(faces.shape[0]):
                 # Get Co-ordinates
                 x1 = int(faces[i][0])
@@ -71,6 +75,7 @@ def main():
 
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
+        i += 1
 
     # When everything is done, release the capture
     video_capture.release()
